@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test Webservice</title>
+</head>
+<script src="jquery-3.2.1.min.js"></script>
+<script>
+$( function() {
+//-----------------------------	
+$('#btn1').click(function() {
+	$.ajax({
+		method: "POST",
+		url: "load.php",
+		dataType:"json"
+	}).done(function(tab){
+		CDtheque= tab;
+		alert("ok	");
+	}).fail(function(){
+		alert("error");
+	});
+
+});
+//-----------------------------	
+});
+
+</script>
+<body>
+<p id=demo>TEST</p>
+<button id=btn1>OK</button>
+
+</body>
+</html>

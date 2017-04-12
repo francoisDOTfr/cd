@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mini projet Equipe de personnes</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+	<!-- SELECT2 -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<script>
+
+var cdtheque = {};
+
+var str = "";
+var str2 = "";
+
+var data = [];
+var tabCd = []; 
+
+
+
+function Cd(id, name){
+	this.id = id;
+	this.name = name;
+}
+
+function chargement(){
+	$.ajax({
+	method: "POST",
+	url: "load.php",
+	dataType:"json"
+	}).done(function(tab){
+		cdtheque=tab;
+		console.log(cdtheque);
+		tabCd	= cdtheque.tabCD; 
+		console.log(tabCd);
+		affichageTabCD();
+	}).fail(function(){
+		alert("error");
+	});
+};
+
+function affichageTabCD(){
+	for (var i = 0; i < tabCd.length; i++) {
+		affichage(tabCd[i]);
+		console.log(tabCd[i]);
+	}
+}
+
+
+
+	//--------------------------------------
+	// AFFICHAGE DU TABLEAU CD
+	//--------------------------------------
+	function affichage(CD){
+
+/*		console.log(CD);
+		console.log(CD.id);
+		console.log(CD.nom);*/
+		str ="<br><br>";
+		str +='<table class="table table-striped" data-id='+CD.id+'>';
+		str	+="<tr>";
+		str	+="<td colspan=3><h3>#"+CD.id +" "+CD.name;
+		str	+=' <a class="btn btn-primary btnDelCD" role="button">';
+		str	+='<span class="glyphicon glyphicon-trash">';
+		str	+='</span></a></h3>';
+		str	+='<select class="select" style="width:150px;">';
+		str	+='</select></td>';
+		str	+="</tr>";
+		// entete du tableau
+		str	+="<tr>";
+		str	+="<th>Piste</th><th>Titre</th><th>Temps</th>";
+		str	+="</tr>";
+		str	+="</table>";
+		$('#demo').append(str);
+	
+	};
+
+$(function(){ // doc ready function
+
+	// initialisation de select2
+  	$('.select').select2();
+
+
+	$('#spinner').hide();
+
+	chargement();
+
+	//---------------------------------	
+	indiceCd	= 0;
+	idCd = 1;
+	
+	tabCateg	= [];
+	indiceCateg	= 0;
+	idCateg = 1;
+	
+
+
+	function Cd(id, name){
+		this.id = id;
+		this.name = name;
+	}
+
+	// On cache la partir creation User
+	
+	//--------------------------------------
+	// ADD CD
+	//--------------------------------------
+	$("#btnAddCD").click(function(){
+		// on récupère les valeurs du cd
+		var cdName = $('#cdName').val();
+
+		//spinner
+		$('#spinner').toggle();
+
+		//requete ajax
+		$.post( 
+			// 1 URL
+			"album_create.php",
+			// 2 les Variable 
+			{ name: cdName } ,
+			// 3 function call back
+			function( id ) {
+	  			//alert(id);
+				var newCd = new Cd(id,cdName);
+				affichage(newCd);
+				tabCd.push(newCd);
+				$('#spinner').toggle();
+	  		//$('#exportReport').html(data);
+			}).fail(function() {
+	    		alert( "error" );
+		});
+
+		// creation de l'objet cd
+		//console.log(newCd);
+
+		// on affiche le cd
+
+		// on met le nouvel objet cd dans le tableau de cd
+		//console.log(tabCd);
+		
+		// on incrémente l'id
+
+		//dataPush();
+		//$('#spinner').toggle();
+
+		//exportCD();
+		
+	}); // btn Add User (person)
+
+	//--------------------------------------
+	// ADD Categ
+	//--------------------------------------
+	$("#btnAddCateg").click(function(){
+
+		// on récupère les valeurs du cd
+		categName = $('#categName').val();
+
+		// creation de l'objet cd
+		var newCateg = new Categ(idCateg,categName);
+		//console.log(newCd);
+
+		// on affiche le cd
+		affichageCateg(newCateg);
+
+		// on met le nouvel objet cd dans le tableau de cd
+		tabCateg.push(newCateg);
+		//console.log(tabCd);
+		
+		// on incrémente l'id
+		idCateg++;
+
+		dataPush();
+	}); // btn Add User (person)
+
+
+
+
+	//--------------------------------------
+	// AFFICHAGE DU TABLEAU Categ
+	//--------------------------------------
+	function affichageCateg(Categ){
+
+		console.log(Categ);
+		console.log(Categ.id);
+		console.log(Categ.nom);
+		str2 	='<table class="table table-striped" data-id='+Categ.id+'>';
+		str2	+="<tr>";
+		str2	+="<td colspan=3><h3>#"+Categ.id +" "+Categ.nom;
+		str2	+=' <a class="btn btn-primary btnDelCateg" role="button">';
+		str2	+='<span class="glyphicon glyphicon-trash">';
+		str2	+='</span></a></h3></td>';
+		str2	+="</tr>";
+		// entete du tableau
+		str2	+="</table>";
+		$('#categ').append(str2);
+	
+	};
+
+
+
+	//--------------------------------------
+	// Export CD
+	// envoi le cd à la base de données
+	//--------------------------------------
+	function exportCD(){
+
+		//console.log('export');
+		//console.log(tabCateg);
+
+		/*p1 = {nom:"John",prenom:"Doe"};
+		p2 = {nom:"Jane",prenom:"Doe"};*/
+/*
+
+		var tableau =[];
+		tableau.push(tabCateg);
+		console.log(tableau);*/
+
+			$.post( 
+				// 1 UR
+				"album_create.php",
+				// 2 les Variable 
+				{ name: $('#cdName').val() } ,
+				// 3 function call back
+				function( id ) {
+		  			alert(id);
+		  		//$('#exportReport').html(data);
+			}).fail(function() {
+		    alert( "error" );
+		  });
+	};
+
+
+
+	//---------------------------------	
+	}); // fin doc ready function
+	//---------------------------------	
+
+
+	//--------------------------------------
+	// Delete CD
+	//--------------------------------------
+	$(document).on("click",'.btnDelCD', function(){
+		// suppression des br
+		var emplacement = $(this).parents('table');
+		emplacement.prev().remove();
+		emplacement.prev().remove();
+
+		//console.log($(this));
+		var x = $(this).parents('table').attr('data-id');
+		//$(this).parents('table').html('');
+		$(this).parents('table').hide('fast');
+		//console.log(x);
+
+		for (var i = 0; i < tabCd.length; i++) {
+			if (tabCd[i].id == x) {
+				tabCd.splice(i,1);
+			}
+		}
+
+		// on supprime le cd de la base
+		deleteCD(x);
+		//console.log(x);
+
+	});
+
+	//--------------------------------------
+	// Delete Categ
+	//--------------------------------------
+	$(document).on("click",'.btnDelCateg', function(){
+		// suppression des br
+		/*var emplacement = $(this).parents('table');
+		emplacement.prev().remove();
+		emplacement.prev().remove();*/
+
+		//console.log($(this));
+		var x = $(this).parents('table').attr('data-id');
+		//$(this).parents('table').html('');
+		$(this).parents('table').hide('fast');
+		//console.log(x);
+
+		for (var i = 0; i < tabCateg.length; i++) {
+			if (tabCateg[i].id == x) {
+				tabCateg.splice(i,1);
+			}
+		}
+
+		//on met à jour toutes les categs
+		dataPush();
+	});
+
+
+
+
+
+
+	//--------------------------------------
+	// Supprime un CD
+	// envoi le cd à la base de données
+	//--------------------------------------
+	function deleteCD(idCd){
+
+		//console.log('export');
+		//console.log(tabCateg);
+
+		/*p1 = {nom:"John",prenom:"Doe"};
+		p2 = {nom:"Jane",prenom:"Doe"};*/
+/*
+
+		var tableau =[];
+		tableau.push(tabCateg);
+		console.log(tableau);*/
+
+		//var x = $(this).parents('table').attr('data-id');
+		var x = idCd;
+		console.log(idCd);
+			$.post( 
+				// 1 URL
+				"album_delete.php",
+				// 2 les Variable 
+				{ id: x } ,
+				// 3 function call back
+				function( data ) {
+		  		//alert( "Data Loaded: " + data );
+		  		$('#exportReport').html(data);
+			}).fail(function() {
+		    alert( "error" );
+		  });
+	};
+
+
+
+
+
+	function Categ(id, nom){
+		this.id = id;
+		this.nom = nom;
+	}
+
+
+	//--------------------------------------
+	// DataPush permet de mettre à jour le select2
+	//--------------------------------------
+	function dataPush(){
+		// on vide le select2
+		$(".select").select2().empty();
+
+		// on vide data
+		data = [];
+
+		// on rempli data
+		for (var i = 0; i < tabCateg.length; i++) {
+			data.push({
+				id:	tabCateg[i].id,
+				text:	tabCateg[i].nom
+			});
+		}
+
+		// on envoi data à select2
+		$(".select").select2({
+  			data: data
+		})
+
+		//console.log(data);
+		//console.log('mise à jour des categs');
+	}
+
+
+	</script>
+
+	<style>
+	.divUser{
+		background-color: #ccc;
+		padding: 20px;
+	}
+	.divTeam{
+		background-color: #ccc;
+		padding: 20px;
+	}
+
+	</style>
+</head>
+	<body>
+		<div class="container">
+			<div>
+				<div id="exportReport"></div>
+			</div>
+			<div class="row">
+				<div class="col-md-8">
+				<div class="divTeam">
+					Titre du CD : 
+					<input type="text" id="cdName">
+					<a class="btn btn-success" 
+								id="btnAddCD" role="button">
+								<span class="glyphicon glyphicon-plus"></span>
+								Ajouter un CD
+							</a>
+							<span id="spinner">
+								<img src="spinner.gif" width="20">
+							</span>
+				</div>
+				<div id="demo"></div>
+				</div>
+				<div class="col-md-4">
+					<div class="divUser">
+						<table>
+							<tr>
+								<td>Categorie :</td>
+								<td><input type="text" id="categName" /></td>
+							</tr>
+							
+							<tr>
+								<td>&nbsp;</td>
+								<td><br>
+								<a class="btn btn-success" 
+									id="btnAddCateg" role="button">
+									<span class="glyphicon glyphicon-plus"></span>
+									Ajouter une Category
+								</a>
+							</td>
+							</tr>
+						</table>
+					</div>
+					<div id="categ"></div>	
+				</div>
+			</div>
+		</div>
+
+	</body>
+</html>
